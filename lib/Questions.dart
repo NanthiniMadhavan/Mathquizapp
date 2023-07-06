@@ -1,5 +1,6 @@
-class Questions {
-  String que;
-  bool ans;
-  Questions(this.que, this.ans);
+class Question {
+  String question;
+  int answer;
+
+  Question(this.question, this.answer);
 }

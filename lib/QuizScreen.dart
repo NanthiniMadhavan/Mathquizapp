@@ -12,17 +12,23 @@ class QuizScreen extends StatefulWidget {
 class _QuizScreenState extends State<QuizScreen> {
   var score = 0;
   var n = 0;
-  List que_list = [
-    Questions(" 5 + 9 = 13", false),
-    Questions(" 10 * 8 = 80", true),
-    Questions(" 10 - 5 = 20", false),
-    Questions(" 100 / 2 = 50", true),
+
+  List<Question> queList = [
+    Question("5 + 9 = ", 14),
+    Question("10 * 8 = ", 80),
+    Question("10 - 5 = ", 5),
+    Question("100 / 2 = ", 50),
   ];
-  void CheckAnswer(bool choice, BuildContext ctx) {
-    if (choice == que_list[n].ans) {
+
+  TextEditingController answerController = TextEditingController();
+
+  void CheckAnswer(BuildContext ctx) {
+    int userAnswer = int.tryParse(answerController.text) ?? 0;
+    if (userAnswer == queList[n].answer) {
       // // debugPrint('Correct');
       // setState(() {
       score = score + 1;
+
       final snackBar = SnackBar(
         content: Text(
           "Correct answer",
@@ -55,13 +61,14 @@ class _QuizScreenState extends State<QuizScreen> {
       ScaffoldMessenger.of(ctx).showSnackBar(snackBar);
     }
     setState(() {
-      if (n < que_list.length - 1) {
+      if (n < queList.length - 1) {
         n = n + 1;
       } else {
         Alert(
+          // style: AlertStyle(backgroundColor: Colors.black),
           context: context,
           title: "Finish",
-          desc: "You scored $score out of ${que_list.length}",
+          desc: "You scored $score out of ${queList.length}",
           image: Image.asset("assets/images/paps.png"),
         ).show();
         final snackBar = SnackBar(
@@ -239,7 +246,7 @@ class _QuizScreenState extends State<QuizScreen> {
                         ),
                       ),
                       InkWell(
-                        onTap: () => reset(), //30:12
+                        onTap: () => reset(),
                         child: Text(
                           'RESET',
                           style: TextStyle(
@@ -266,74 +273,119 @@ class _QuizScreenState extends State<QuizScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          que_list[n].que,
+                          queList[n].question,
                           style: TextStyle(
                             color: Color(0xFFCCBA78),
                             fontFamily: 'Caprasimo',
                             fontSize: 30,
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
                   SizedBox(
                     height: 50.0,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.green, // Set green color for "true"
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: ElevatedButton(
-                          onPressed: () => CheckAnswer(true, ctx),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFCCBA78),
-                            padding: EdgeInsets.all(16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            // Set transparent color
-                          ),
-                          child: Text(
-                            "true",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontFamily: 'Caprasimo',
-                              fontSize: 20,
-                            ),
-                          ),
-                        ),
+                  TextField(
+                    controller: answerController,
+                    keyboardType: TextInputType.number,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: 'Caprasimo',
+                      fontSize: 20,
+                    ),
+                    decoration: InputDecoration(
+                      suffixIcon: answerController.text.length > 0
+                          ? IconButton(
+                              onPressed: () {
+                                answerController.clear();
+                                setState(() {});
+                              },
+                              icon:
+                                  Icon(Icons.cancel, color: Color(0xFFCCBA78)))
+                          : null,
+                      hintText: 'Enter your answer',
+                      hintStyle: TextStyle(
+                        color: Color(0xFFCCBA78),
+                        fontFamily: 'Caprasimo',
+                        fontSize: 20,
                       ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.red, // Set red color for "false"
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: ElevatedButton(
-                          onPressed: () => CheckAnswer(false, ctx),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFCCBA78),
-                            padding: EdgeInsets.all(16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            // Set transparent color
-                          ),
-                          child: Text(
-                            "false",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontFamily: 'Caprasimo',
-                              fontSize: 20,
-                            ),
-                          ),
-                        ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () => CheckAnswer(context),
+                    child: Text(
+                      'Submit',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontFamily: 'Caprasimo',
+                        fontSize: 20,
                       ),
-                    ],
-                  )
+                    ),
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(Color(0xFFCCBA78)),
+                      padding: MaterialStateProperty.all(
+                        EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                      ),
+                    ),
+                  ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  //   children: <Widget>[
+                  //     Container(
+                  //       decoration: BoxDecoration(
+                  //         color: Colors.green, // Set green color for "true"
+                  //         borderRadius: BorderRadius.circular(8),
+                  //       ),
+                  //       child: ElevatedButton(
+                  //         onPressed: () => CheckAnswer(true, ctx),
+                  //         style: ElevatedButton.styleFrom(
+                  //           backgroundColor: Color(0xFFCCBA78),
+                  //           padding: EdgeInsets.all(16),
+                  //           shape: RoundedRectangleBorder(
+                  //             borderRadius: BorderRadius.circular(8),
+                  //           ),
+                  //           // Set transparent color
+                  //         ),
+                  //         child: Text(
+                  //           "true",
+                  //           style: TextStyle(
+                  //             color: Colors.black,
+                  //             fontFamily: 'Caprasimo',
+                  //             fontSize: 20,
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //     Container(
+                  //       decoration: BoxDecoration(
+                  //         color: Colors.red, // Set red color for "false"
+                  //         borderRadius: BorderRadius.circular(8),
+                  //       ),
+                  //       child: ElevatedButton(
+                  //         onPressed: () => CheckAnswer(false, ctx),
+                  //         style: ElevatedButton.styleFrom(
+                  //           backgroundColor: Color(0xFFCCBA78),
+                  //           padding: EdgeInsets.all(16),
+                  //           shape: RoundedRectangleBorder(
+                  //             borderRadius: BorderRadius.circular(8),
+                  //           ),
+                  //           // Set transparent color
+                  //         ),
+                  //         child: Text(
+                  //           "false",
+                  //           style: TextStyle(
+                  //             color: Colors.black,
+                  //             fontFamily: 'Caprasimo',
+                  //             fontSize: 20,
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ],
+                  // )
                 ],
               ),
             ),
