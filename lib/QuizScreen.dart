@@ -12,12 +12,20 @@ class QuizScreen extends StatefulWidget {
 class _QuizScreenState extends State<QuizScreen> {
   var score = 0;
   var n = 0;
+  late int number1, number2;
+  late String operator;
+
+  // operator - random number 0 to 3 0 - add, 1 - sub, 3 - multiply, 4 - divide
+  // number1, number2 --> number2 depends on sub and divide and whether it should be greater than number1 or not
+  // number1 - random less than 10, 50, 100
+  // number2 - condition based random number generate
 
   List<Question> queList = [
     Question("5 + 9 = ", 14),
     Question("10 * 8 = ", 80),
     Question("10 - 5 = ", 5),
     Question("100 / 2 = ", 50),
+    // 4 questions created from random numbers above
   ];
 
   TextEditingController answerController = TextEditingController();
@@ -205,7 +213,7 @@ class _QuizScreenState extends State<QuizScreen> {
         children: [
           Align(
             alignment: Alignment.center,
-            child: Image.network(
+            child: Image.asset(
               'assets/images/q.png',
               height: 120,
               width: 120,
@@ -280,39 +288,39 @@ class _QuizScreenState extends State<QuizScreen> {
                             fontSize: 30,
                           ),
                         ),
+                        SizedBox(width: 20),
+                        TextField(
+                          controller: answerController,
+                          keyboardType: TextInputType.number,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: 'Caprasimo',
+                            fontSize: 20,
+                          ),
+                          decoration: InputDecoration(
+                            suffixIcon: answerController.text.length > 0
+                                ? IconButton(
+                                onPressed: () {
+                                  answerController.clear();
+                                  setState(() {});
+                                },
+                                icon:
+                                Icon(Icons.cancel, color: Color(0xFFCCBA78)))
+                                : null,
+                            hintText: '__',
+                            hintStyle: TextStyle(
+                              color: Color(0xFFCCBA78),
+                              fontFamily: 'Caprasimo',
+                              fontSize: 20,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
                   SizedBox(
                     height: 50.0,
                   ),
-                  TextField(
-                    controller: answerController,
-                    keyboardType: TextInputType.number,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'Caprasimo',
-                      fontSize: 20,
-                    ),
-                    decoration: InputDecoration(
-                      suffixIcon: answerController.text.length > 0
-                          ? IconButton(
-                              onPressed: () {
-                                answerController.clear();
-                                setState(() {});
-                              },
-                              icon:
-                                  Icon(Icons.cancel, color: Color(0xFFCCBA78)))
-                          : null,
-                      hintText: 'Enter your answer',
-                      hintStyle: TextStyle(
-                        color: Color(0xFFCCBA78),
-                        fontFamily: 'Caprasimo',
-                        fontSize: 20,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () => CheckAnswer(context),
                     child: Text(
@@ -331,78 +339,11 @@ class _QuizScreenState extends State<QuizScreen> {
                       ),
                     ),
                   ),
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  //   children: <Widget>[
-                  //     Container(
-                  //       decoration: BoxDecoration(
-                  //         color: Colors.green, // Set green color for "true"
-                  //         borderRadius: BorderRadius.circular(8),
-                  //       ),
-                  //       child: ElevatedButton(
-                  //         onPressed: () => CheckAnswer(true, ctx),
-                  //         style: ElevatedButton.styleFrom(
-                  //           backgroundColor: Color(0xFFCCBA78),
-                  //           padding: EdgeInsets.all(16),
-                  //           shape: RoundedRectangleBorder(
-                  //             borderRadius: BorderRadius.circular(8),
-                  //           ),
-                  //           // Set transparent color
-                  //         ),
-                  //         child: Text(
-                  //           "true",
-                  //           style: TextStyle(
-                  //             color: Colors.black,
-                  //             fontFamily: 'Caprasimo',
-                  //             fontSize: 20,
-                  //           ),
-                  //         ),
-                  //       ),
-                  //     ),
-                  //     Container(
-                  //       decoration: BoxDecoration(
-                  //         color: Colors.red, // Set red color for "false"
-                  //         borderRadius: BorderRadius.circular(8),
-                  //       ),
-                  //       child: ElevatedButton(
-                  //         onPressed: () => CheckAnswer(false, ctx),
-                  //         style: ElevatedButton.styleFrom(
-                  //           backgroundColor: Color(0xFFCCBA78),
-                  //           padding: EdgeInsets.all(16),
-                  //           shape: RoundedRectangleBorder(
-                  //             borderRadius: BorderRadius.circular(8),
-                  //           ),
-                  //           // Set transparent color
-                  //         ),
-                  //         child: Text(
-                  //           "false",
-                  //           style: TextStyle(
-                  //             color: Colors.black,
-                  //             fontFamily: 'Caprasimo',
-                  //             fontSize: 20,
-                  //           ),
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // )
-                ],
-              ),
-            ),
-          ),
-          // Column(
-          //   children: <Widget>[
-          //     Container(
-          //       color: Colors.yellow,
-          //       child: const TextField(
-          //         decoration: InputDecoration(),
-          //         keyboardType: TextInputType.number,
-          //       ),
-          //     ),
-          //   ],
-          // ),
         ],
       ),
+    ),
+                  ),
+    ],),
     );
   }
 }

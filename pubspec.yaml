@@ -58,28 +58,24 @@ flutter:
   fonts:
     - family: RobotoMono
       fonts:
-        - asset: asset/fonts/RobotoMono-Regular.ttf
+        - asset: assets/fonts/RobotoMono-Regular.ttf
 #        - asset: fonts/RobotoMono-Bold.ttf
           weight: 700
-
     - family: Poppins
       fonts:
-        - asset: asset/fonts/Poppins-Regular.ttf
+        - asset: assets/fonts/Poppins-Regular.ttf
           #        - asset: fonts/RobotoMono-Bold.ttf
           weight: 700
-
-
-
     - family: Kablammo
       fonts:
-        - asset: asset/fonts/Kablammo-Regular.ttf
+        - asset: assets/fonts/Kablammo-Regular.ttf
           #        - asset: fonts/RobotoMono-Bold.ttf
           weight: 700
     - family: Caprasimo
       fonts:
-            - asset: asset/fonts/Caprasimo-Regular.ttf
+        - asset: assets/fonts/Caprasimo-Regular.ttf
           #        - asset: fonts/RobotoMono-Bold.ttf
-              weight: 700
+          weight: 700
 
 
 

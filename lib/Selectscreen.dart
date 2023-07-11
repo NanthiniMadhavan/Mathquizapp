@@ -31,7 +31,7 @@ class _SelectscreenState extends State<Selectscreen> {
           Align(
             // Align widget to center the image
             alignment: Alignment.center,
-            child: Image.network(
+            child: Image.asset(
                 'assets/images/stick.png'), // Display an image from the network
           ),
           SizedBox(height: 20),
