@@ -1,5 +1,6 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:mathquizapp/Questions.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 class QuizScreen extends StatefulWidget {
@@ -11,27 +12,64 @@ class QuizScreen extends StatefulWidget {
 
 class _QuizScreenState extends State<QuizScreen> {
   var score = 0;
-  var n = 0;
+  late int num1, num2;
+  late String operator;
+  late int correctAnswer;
+  late int userAnswer;
+  int questionCount = 0;
+  int maxQuestions = 3;
 
-  List<Question> queList = [
-    Question("5 + 9 = ", 14),
-    Question("10 * 8 = ", 80),
-    Question("10 - 5 = ", 5),
-    Question("100 / 2 = ", 50),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    generateQuestion();
+  }
+
+  void generateQuestion() {
+    if (questionCount < maxQuestions) {
+      setState(() {
+        num1 = Random().nextInt(10) + 1;
+        num2 = Random().nextInt(10) + 1;
+        operator = ['+', '-', '*', '/'][Random().nextInt(4)];
+        switch (operator) {
+          case '+':
+            correctAnswer = num1 + num2;
+            break;
+          case '-':
+            correctAnswer = num1 - num2;
+            break;
+          case '*':
+            correctAnswer = num1 * num2;
+            break;
+          case '/':
+            correctAnswer = num1 ~/ num2; // integer division
+            break;
+        }
+        questionCount++;
+      });
+    } else {
+      Alert(
+        context: context,
+        title: "Finish",
+        desc: "You scored $score out of $maxQuestions",
+        image: Image.asset("assets/images/paps.png"),
+      ).show();
+      reset();
+    }
+  }
 
   TextEditingController answerController = TextEditingController();
 
-  void CheckAnswer(BuildContext ctx) {
+  void checkAnswer(BuildContext ctx) {
     int userAnswer = int.tryParse(answerController.text) ?? 0;
-    if (userAnswer == queList[n].answer) {
-      // // debugPrint('Correct');
-      // setState(() {
-      score = score + 1;
+    if (userAnswer == correctAnswer) {
+      setState(() {
+        score = score + 1;
+      });
 
       final snackBar = SnackBar(
         content: Text(
-          "Correct answer",
+          "Correct answer: $num1 $operator $num2 = $correctAnswer",
           style: TextStyle(
             color: Colors.black,
             fontFamily: 'Caprasimo',
@@ -43,8 +81,11 @@ class _QuizScreenState extends State<QuizScreen> {
       );
 
       ScaffoldMessenger.of(ctx).showSnackBar(snackBar);
-      // });
     } else {
+      setState(() {
+        // score = score - 1;
+      });
+
       final snackBar = SnackBar(
         content: Text(
           "Wrong answer",
@@ -60,31 +101,17 @@ class _QuizScreenState extends State<QuizScreen> {
 
       ScaffoldMessenger.of(ctx).showSnackBar(snackBar);
     }
+
     setState(() {
-      if (n < queList.length - 1) {
-        n = n + 1;
+      if (questionCount < maxQuestions - 1) {
+        questionCount = questionCount + 1;
       } else {
         Alert(
-          // style: AlertStyle(backgroundColor: Colors.black),
           context: context,
           title: "Finish",
-          desc: "You scored $score out of ${queList.length}",
+          desc: "You scored $score out of $maxQuestions",
           image: Image.asset("assets/images/paps.png"),
         ).show();
-        final snackBar = SnackBar(
-          content: Text(
-            "Level 1 completed score $score/4",
-            style: TextStyle(
-              color: Colors.black,
-              fontFamily: 'Caprasimo',
-              fontSize: 20,
-            ),
-          ),
-          duration: Duration(seconds: 5),
-          backgroundColor: Color(0xFFCCBA78),
-        );
-
-        ScaffoldMessenger.of(ctx).showSnackBar(snackBar);
         reset();
       }
     });
@@ -92,9 +119,10 @@ class _QuizScreenState extends State<QuizScreen> {
 
   void reset() {
     setState(() {
-      n = 0;
+      questionCount = 0;
       score = 0;
     });
+    generateQuestion();
   }
 
   @override
@@ -113,7 +141,6 @@ class _QuizScreenState extends State<QuizScreen> {
         centerTitle: true,
         backgroundColor: Color(0xFFCCBA78),
       ),
-      backgroundColor: Colors.black,
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -121,7 +148,7 @@ class _QuizScreenState extends State<QuizScreen> {
             const DrawerHeader(
               decoration: BoxDecoration(color: Colors.black),
               child: Text(
-                'Achivements',
+                'Achievements',
                 style: TextStyle(
                   color: Color(0xFFCCBA78),
                   fontFamily: 'Caprasimo',
@@ -152,7 +179,7 @@ class _QuizScreenState extends State<QuizScreen> {
                 color: Color(0xFFCCBA78),
               ),
               title: Text(
-                'level 2',
+                'Level 2',
                 style: TextStyle(
                   color: Colors.black,
                   fontFamily: 'Caprasimo',
@@ -169,7 +196,7 @@ class _QuizScreenState extends State<QuizScreen> {
                 color: Color(0xFFCCBA78),
               ),
               title: Text(
-                'level 3',
+                'Level 3',
                 style: TextStyle(
                   color: Colors.black,
                   fontFamily: 'Caprasimo',
@@ -186,7 +213,7 @@ class _QuizScreenState extends State<QuizScreen> {
                 color: Color(0xFFCCBA78),
               ),
               title: Text(
-                'level 4',
+                'Level 4',
                 style: TextStyle(
                   color: Colors.black,
                   fontFamily: 'Caprasimo',
@@ -201,11 +228,12 @@ class _QuizScreenState extends State<QuizScreen> {
         ),
         shadowColor: Color(0xFFCCBA78),
       ),
+      backgroundColor: Colors.black,
       body: Column(
         children: [
           Align(
             alignment: Alignment.center,
-            child: Image.network(
+            child: Image.asset(
               'assets/images/q.png',
               height: 120,
               width: 120,
@@ -227,7 +255,7 @@ class _QuizScreenState extends State<QuizScreen> {
           ),
           SizedBox(
             height: 20,
-          ), // level1(),
+          ),
           Builder(
             builder: (ctx) => Container(
               padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
@@ -238,7 +266,7 @@ class _QuizScreenState extends State<QuizScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
                       Text(
-                        'SCORE: $score/4',
+                        'SCORE: $score/$maxQuestions',
                         style: TextStyle(
                           color: Color(0xFFCCBA78),
                           fontFamily: 'Caprasimo',
@@ -261,60 +289,54 @@ class _QuizScreenState extends State<QuizScreen> {
                   SizedBox(
                     height: 30.0,
                   ),
-                  Container(
-                    height: 100,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15.0),
-                        border: Border.all(
-                          color: Color(0xFFCCBA78),
-                        )),
+                  Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          queList[n].question,
-                          style: TextStyle(
-                            color: Color(0xFFCCBA78),
-                            fontFamily: 'Caprasimo',
-                            fontSize: 30,
-                          ),
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              '$num1 $operator $num2 =',
+                              style: TextStyle(
+                                color: Color(0xFFCCBA78),
+                                fontFamily: 'Caprasimo',
+                                fontSize: 30,
+                              ),
+                            ),
+                            SizedBox(width: 16),
+                            SizedBox(
+                              width: 40,
+                              child: TextField(
+                                controller: answerController,
+                                style: TextStyle(
+                                  color: Color(0xFFCCBA78),
+                                  fontFamily: 'Caprasimo',
+                                  fontSize: 30,
+                                ),
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                  fillColor: Color(0xFFCCBA78),
+                                  focusColor: Color(0xFFCCBA78),
+                                ),
+                                onChanged: (value) {
+                                  setState(() {
+                                    userAnswer = int.tryParse(value) ?? 0;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 50.0,
-                  ),
-                  TextField(
-                    controller: answerController,
-                    keyboardType: TextInputType.number,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'Caprasimo',
-                      fontSize: 20,
-                    ),
-                    decoration: InputDecoration(
-                      suffixIcon: answerController.text.length > 0
-                          ? IconButton(
-                              onPressed: () {
-                                answerController.clear();
-                                setState(() {});
-                              },
-                              icon:
-                                  Icon(Icons.cancel, color: Color(0xFFCCBA78)))
-                          : null,
-                      hintText: 'Enter your answer',
-                      hintStyle: TextStyle(
-                        color: Color(0xFFCCBA78),
-                        fontFamily: 'Caprasimo',
-                        fontSize: 20,
-                      ),
-                    ),
-                  ),
                   SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: () => CheckAnswer(context),
+                    onPressed: () {
+                      checkAnswer(ctx);
+                      generateQuestion();
+                    },
                     child: Text(
                       'Submit',
                       style: TextStyle(
@@ -331,76 +353,10 @@ class _QuizScreenState extends State<QuizScreen> {
                       ),
                     ),
                   ),
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  //   children: <Widget>[
-                  //     Container(
-                  //       decoration: BoxDecoration(
-                  //         color: Colors.green, // Set green color for "true"
-                  //         borderRadius: BorderRadius.circular(8),
-                  //       ),
-                  //       child: ElevatedButton(
-                  //         onPressed: () => CheckAnswer(true, ctx),
-                  //         style: ElevatedButton.styleFrom(
-                  //           backgroundColor: Color(0xFFCCBA78),
-                  //           padding: EdgeInsets.all(16),
-                  //           shape: RoundedRectangleBorder(
-                  //             borderRadius: BorderRadius.circular(8),
-                  //           ),
-                  //           // Set transparent color
-                  //         ),
-                  //         child: Text(
-                  //           "true",
-                  //           style: TextStyle(
-                  //             color: Colors.black,
-                  //             fontFamily: 'Caprasimo',
-                  //             fontSize: 20,
-                  //           ),
-                  //         ),
-                  //       ),
-                  //     ),
-                  //     Container(
-                  //       decoration: BoxDecoration(
-                  //         color: Colors.red, // Set red color for "false"
-                  //         borderRadius: BorderRadius.circular(8),
-                  //       ),
-                  //       child: ElevatedButton(
-                  //         onPressed: () => CheckAnswer(false, ctx),
-                  //         style: ElevatedButton.styleFrom(
-                  //           backgroundColor: Color(0xFFCCBA78),
-                  //           padding: EdgeInsets.all(16),
-                  //           shape: RoundedRectangleBorder(
-                  //             borderRadius: BorderRadius.circular(8),
-                  //           ),
-                  //           // Set transparent color
-                  //         ),
-                  //         child: Text(
-                  //           "false",
-                  //           style: TextStyle(
-                  //             color: Colors.black,
-                  //             fontFamily: 'Caprasimo',
-                  //             fontSize: 20,
-                  //           ),
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // )
                 ],
               ),
             ),
           ),
-          // Column(
-          //   children: <Widget>[
-          //     Container(
-          //       color: Colors.yellow,
-          //       child: const TextField(
-          //         decoration: InputDecoration(),
-          //         keyboardType: TextInputType.number,
-          //       ),
-          //     ),
-          //   ],
-          // ),
         ],
       ),
     );
